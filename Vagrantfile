@@ -10,9 +10,9 @@ Vagrant.configure(2) do |config|
     vb.name = "Oracle12c-3"
   end
 
-	config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "oracle-db.yml"
-        ansible.inventory_path = "./hosts"
-      	ansible.limit = 'all'
-    end
+	# config.vm.provision "ansible" do |ansible|
+  #       ansible.playbook = "oracle-db.yml"
+  #       ansible.inventory_path = "./hosts"
+  #     	ansible.limit = 'all'
+  #   end
 end
