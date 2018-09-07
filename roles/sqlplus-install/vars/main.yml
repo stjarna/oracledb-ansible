@@ -1,0 +1,5 @@
+---
+oracle_home: '{{ oracle_base }}/{{ oracle_user }}/product/{{ oracle_install_version }}/{{ dbhome_name }}'
+sqlplus_rpm_files:
+  - "oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.rpm"
+  - "oracle-instantclient12.1-sqlplus-12.1.0.2.0-1.x86_64.rpm"

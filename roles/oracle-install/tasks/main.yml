@@ -1,8 +1,4 @@
-################################################################################
-# ==> Tasks for oracle-install role. This role installs the Oracle Database
-# ==> 12c software, configure a database, listener and ex express
-################################################################################
-
+---
 - name: "Create folder for installation files"
   file: 
     state: "directory"
@@ -12,6 +8,7 @@
     src: "{{ item }}" 
     dest: "{{ installation_folder }}/"
   with_items: "{{ installer_archives }}"
+  become: true
 - name: "Extract installation files"
   command: "unzip {{ installation_folder }}/{{ item }} -d {{ installation_folder }}/"
   with_items: "{{ installer_archives }}"
@@ -29,7 +26,7 @@
 - name: "Debug - installProductOutput"  
   debug:
     var: installProductOutput   
-  tag: "debug"    
+  tags: "debug"    
 
 # ==> execute Inventory command as root
 - name: "Execute Inventoty root command"
@@ -39,7 +36,7 @@
 - name: "Debug - orainstOutput"  
   debug:
     var: orainstOutput  
-  tag: "debug"        
+  tags: "debug"        
 
 # ==> execute DB home command as root
 - name: "Execute DB home root command"
@@ -49,7 +46,7 @@
 - name: "Debug - rootOutput"  
   debug:
     var: rootOutput  
-  tag: "debug"        
+  tags: "debug"        
 
 # ==> TODO: Create a new role for creating the database
 # ==> Create Listener TODO: Parameterize port, name etc
@@ -64,7 +61,7 @@
 - name: "Debug - netcaOutput"  
   debug:
     var: netcaOutput  
-  tag: "debug"        
+  tags: "debug"        
 
 - name: "Copy response file for dbca"
   template: 
@@ -77,22 +74,29 @@
 - name: "Debug - dbcaOutput"  
   debug:
     var: dbcaOutput  
-  tag: "debug"        
+  tags: "debug"        
 
 - name: "Create oracle home variable"
   lineinfile: 
-    dest: "/home/{{ oracle_user }}/.bashrc" 
-    line: "export ORACLE_HOME={{ oracle_home }}"
+    dest: "/etc/profile.d/sqlplus.sh" 
+    create: true
+    line: "export ORACLE_HOME={{ oracle_home }}"    
+  become: true  
+  become_user: "root"
 
 - name: "Create oracle sid variable"
   lineinfile: 
-    dest: "/home/{{ oracle_user }}/.bashrc" 
+    dest: "/etc/profile.d/sqlplus.sh" 
     line: "export ORACLE_SID={{ oracle_sid }}"
+  become: true  
+  become_user: "root"
 
 - name: "Add oracle home bin folder"
   lineinfile: 
-    dest: "/home/{{ oracle_user }}/.bashrc" 
+    dest: "/etc/profile.d/sqlplus.sh" 
     line: "export PATH=$PATH:$ORACLE_HOME/bin"
+  become: true  
+  become_user: "root"
 
 - name: "Change oratab"
   lineinfile: 
@@ -115,16 +119,7 @@
 - name: "Debug - chkconfigOutput"  
   debug:
     var: chkconfigOutput
-  tag: "debug"    
-
-
-# You can remove it for non vagrant server.
-#- name: reboot vagrant virtual machine
-#  local_action: shell vagrant reload
-#  sudo_user: '{{ host_username }}'
-#  ignore_errors: yes
-#  tags:
-#    - reboot-vagrant
+  tags: "debug"    
 
 - name: "Create trigger for autostart pluggable db's"
   copy: 

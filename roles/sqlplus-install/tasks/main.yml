@@ -1,0 +1,26 @@
+---
+- name: "Copy installer files"
+  copy: 
+    src: "{{ item }}" 
+    dest: "{{ installation_folder }}/"
+  with_items: "{{ sqlplus_rpm_files }}"
+
+- name: "Install required rpm packages"
+  yum: 
+    name: "{{ installation_folder }}/{{ item }}" 
+    state: "present"
+  become: true    
+  with_items: "{{ sqlplus_rpm_files }}"
+
+- name: "Create symbolic link for sqlplus"
+  file:
+    src: "/usr/bin/sqlplus64"
+    dest: "/usr/bin/sqlplus"
+    state: link
+
+- name: "Create /etc/ld.so.conf.d/sqlplus.conf" 
+  lineinfile:
+    path: "/etc/ld.so.conf.d/sqlplus.conf"
+    create: true
+    line: "{{ oracle_home }}/lib"
+  become: true
