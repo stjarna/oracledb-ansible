@@ -33,7 +33,7 @@
   user: 
     name: "{{ oracle_user }}" 
     group: "{{ oracle_install_group }}" 
-    password: "{{ oracle_os_user_pass }}"
+    password: "{{ oracle_os_user_pass  | password_hash('sha512') }}"
 - name: "Add extra groups"
   user: 
     name: "{{ oracle_user }}" 
