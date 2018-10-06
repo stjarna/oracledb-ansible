@@ -24,3 +24,6 @@
     create: true
     line: "{{ oracle_home }}/lib"
   become: true
+
+- name: Exec ldconfig
+  command: ldconfig

@@ -13,13 +13,13 @@
   command: "unzip {{ installation_folder }}/{{ item }} -d {{ installation_folder }}/"
   with_items: "{{ installer_archives }}"
 
-# ==> generate response file
+# generate response file
 - name: "Generate the response file for software only installation"
   template: 
     src: "db_install.rsp.j2"
     dest: "{{ installation_folder }}/db_install.rsp"
 
-# ==> execute installation
+# execute installation
 - name: "Install Product"
   command: "{{ installation_folder}}/database/runInstaller -silent -ignorePrereq -ignoreSysPrereqs -waitforcompletion -responseFile {{ installation_folder }}/db_install.rsp"
   register: "installProductOutput"  
@@ -28,7 +28,7 @@
     var: installProductOutput   
   tags: "debug"    
 
-# ==> execute Inventory command as root
+# execute Inventory command as root
 - name: "Execute Inventoty root command"
   command: "{{ inventory_location }}/orainstRoot.sh"
   become_user: "root"
@@ -38,7 +38,7 @@
     var: orainstOutput  
   tags: "debug"        
 
-# ==> execute DB home command as root
+# execute DB home command as root
 - name: "Execute DB home root command"
   command: "{{ oracle_home }}/root.sh"
   become_user: "root"
@@ -48,8 +48,7 @@
     var: rootOutput  
   tags: "debug"        
 
-# ==> TODO: Create a new role for creating the database
-# ==> Create Listener TODO: Parameterize port, name etc
+# Create Listener
 - name: "Copy listener response file"
   template: 
     src: "netca.rsp.j2" 

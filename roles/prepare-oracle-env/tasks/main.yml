@@ -1,9 +1,4 @@
-################################################################################
-# ==> Task Required for Configure Linux to host Oracle Database 12c
-# ==> Supports version 12.1.0.2
-################################################################################
-
-# ==> Configure Linux
+# Configure Linux
 - name: "Install required libraries"
   yum: 
     name: "{{ item }}" 
@@ -24,7 +19,7 @@
     state: "present"
   with_dict: "{{ kernel_params }}"
 
-# ==> Create users and groups
+# Create users and groups
 - name: "Create groups"
   group: 
     name: "{{ oracle_install_group }}" 
@@ -46,7 +41,7 @@
     append: true
   with_items: "{{ extra_groups }}"
 
-# ==> Add limits for oracle user
+# Add limits for oracle user
 - name: "Add oracle user limits"
   lineinfile: 
     dest: "/etc/security/limits.conf" 
@@ -61,7 +56,7 @@
     - { limit: "soft", type: "memlock", value: "{{ soft_memlock }}" }
     - { limit: "hard", type: "memlock", value: "{{ hard_memlock }}" }
 
-# ==> Create Base directories
+# Create Base directories
 - name: "Create Oracle Base directory"
   file: 
     state: "directory" 
@@ -69,7 +64,7 @@
     owner: "{{ oracle_user }}" 
     group: "{{ oracle_install_group }}"
 
-# ==> Disable transparent hugepages
+# Disable transparent hugepages
 - name: "Copy script"
   copy: 
     src: "disable_trans_hugepages.sh"
@@ -78,7 +73,7 @@
 - name: "Disable Transparent Huge Pages"
   shell: "~/disable_trans_hugepages.sh"
 
-# ==> Configure huge pages
+# Configure huge pages
 - name: "Configure kernel for hugepages"
   sysctl: 
     name: "vm.nr_hugepages" 

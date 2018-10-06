@@ -1,8 +1,5 @@
-roles/oracle-install/files/linuxamd64_12102_database_1of2.zip
-roles/oracle-install/files/linuxamd64_12102_database_2of2.zip
-roles/sqlplus-install/files/oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.rpm
-roles/sqlplus-install/files/oracle-instantclient12.1-sqlplus-12.1.0.2.0-1.x86_64.rpm
-
+**/*.zip
+**/*.rpm
 .gitignore
 .vagrant
 .retry
