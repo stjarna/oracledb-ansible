@@ -1,0 +1,17 @@
+---
+- name: "Copy initScript.sql script"
+  template: 
+    src: "initScript.sql.j2" 
+    dest: "{{ installation_folder }}/initScript.sql"
+
+- name: "Run sqlplus"
+  shell: "sqlplus sys/{{ oracle_pass_all_users }}@{{ oracle_sid }} as sysdba @{{ installation_folder }}/initScript.sql"
+  register: sqlplusOutput
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+
+- name: "Debug - sqlplusOutput"  
+  debug:
+    var: sqlplusOutput  
+  tags: "debug"      
+
