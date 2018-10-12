@@ -7,9 +7,9 @@
     - infra-vars.yml
     - db-vars.yml
   roles:
-    # - role: prepare-oracle-env
-    # - role: install-oracle
-    #   become_user: '{{ oracle_user }}'
-    # - role: install-sqlplus
+    - role: prepare-oracle-env
+    - role: install-oracle
+      become_user: '{{ oracle_user }}'
+    - role: install-sqlplus
     - role: run-init-script
       become_user: '{{ oracle_user }}'    
