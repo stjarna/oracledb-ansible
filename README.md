@@ -1,29 +1,75 @@
-# oracledb-ansible
-Ansible playbook to configure a CentOS/RHEL/Oracle Linux 7 server with Oracle 12c R1 Enterprise Edition Database
+# Oracle installation
+This playbook provides an automated way of Oracle 12C installation. Please note, it is a modified version of [cvezalis/oracledb-ansible](https://github.com/cvezalis/oracledb-ansible).
 
-For run the playbook using the vagrant configuration for test it you need to:
 
-Download from Oracle support the Oracle installation files: 
-- linuxamd64_12102_database_1of2.zip
-- linuxamd64_12102_database_1of2.zip
-and put them to folder roles/oracle-install/files inside checkout folder
+## Prerequisities
+* **OS RH/CentOS** 
+* **Files - host, ansible.cfg**
+    * You will likely run the playbook against different host than a VM created by Vagrant. In such case, amend both files accordingly (username, public key, hostname).
+* **Copy ssh public key to target machine**
+* **Enable passwordless sudo**
+    * E.g. add new file to /etc/sudoers.d/<YOUR FILE> with content  <YOUR USER NAME> ALL=(ALL) NOPASSWD: ALL
+* **Oracle 12C installer** 
+    * The project does not contain zip files. You have to download installer archives at Oracle site
+    * Once obtained, please copy them to *roles/install-oracle/files* as *linuxamd64_12102_database_1of2.zip* and *linuxamd64_12102_database_2of2.zip*
+* **Oracle SqlPlus installer**
+  * The project does not contain installation RPM files. You have to download RPM files for SqlPlus at Oracle site
+    * Once obtained, please copy it to *roles/install-sqlplus/files* as *oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.rpm* and *oracle-instantclient12.1-sqlplus-12.1.0.2.0-1.x86_64.rpm*
 
-After go into checkout folder and execute :
+## Roles
+We split the installation into several roles
 
-vagrant up 
+Each role deals with particular responsibility.
 
-After a few minutes a virtual machine with Oracle Database will be ready for you without any further configuration. You can access the Enterprise Manager Express using sys/sysdba and “oracle” as password.
+At the moment, playbook contains following roles:
+* **prepare-oracle-env**
+    * This role tweaks OS, prepares directory structure for the Weblogic installation. Next to directories creation, it also copies installation related files (installer, oraInst etc). 
+* **install-oracle**
+    * This role installs Oracle (including listener configuration, tabase creation etc)
+* **install-sqlplus**
+    This role installs sqlplus client
+* **run-init-script**
+    * This role runs init script that creates a *appdeploy* user
 
-https://oradb3.private:5500/em
+## Customization
+There are two YML files that enable us to tweak various bits
+### infra-vars.yml
+This files contains infra related variables. It covers things such as username/password, groups, paths etc.
 
-You can shutdown the virtual machine using:
+If you need to change SID, OS user password, charset etc, this file is the right place.
 
-vagrant halt
+### db-vars.yml
+This files aims at Oracle password, Oracle installation folder and server hostname.
 
-You can destroy it (delete from disk) using:
 
-vagrant destroy
+## Vagrant
+You can run this project contains also against VM prepared by Vagrant that is included.
 
-password for Oracle Operating system user is welcome1
+### Steps
+* Create environment
+    * ``$ vagrant up``
+* Halt environment
+    * ``$ vagrant halt``
+* Destroy environment
+    * ``$ vagrant destroy``
+* Connect to environment
+    * ``$ vagrant ssh``
 
-more details at my article here: http://www.nodalpoint.com/devops-ansible-oracle-database-oraclelinux-7-vagrant/
+Vagrant configuration creates a Centos/7 VM with IP address 192.168.56.13.
+
+Please note that the Vagrant does not start deliberatelly Ansible playbook.
+
+Though, once you create VM, you can execute the playbook manually.
+``$ ansible-playbook oracle-db.yml``
+
+
+Once playbook execution completes successfully, you can access Oracle Enterprise Manager at http://192.168.56.13:5500/em using following credentials:
+* **user** *sys*
+* **password** *oracle*
+
+Or you connect via SSH to VM and execute following command
+``$ sqlplus sys as sysdba``
+
+Or you can connect from SQL client via JDBC connection string
+``jdbc:oracle:thin:@//<IP OR HOSTNAME>:1521/orcl.oradb3.private`` with *appdeploy/appdeploy*
+
